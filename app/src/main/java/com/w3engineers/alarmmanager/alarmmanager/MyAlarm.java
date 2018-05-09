@@ -1,28 +1,58 @@
 package com.w3engineers.alarmmanager.alarmmanager;
 
+
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
-import android.widget.Toast;
+import android.os.Build;
 
+import static android.app.NotificationManager.IMPORTANCE_DEFAULT;
 /**
  * Created by Farhad on 05/08/2018.
  */
 
 //class extending the Broadcast Receiver
-public class MyAlarm extends BroadcastReceiver {
+public class MyAlarm extends BroadcastReceiver{
+    private static final String CHANNEL_ID = "com.w3engineers.alarmmanager.alarmmanager";
 
-    //the method will be fired when the alarm is triggerred
     @Override
     public void onReceive(Context context, Intent intent) {
+        Intent notificationIntent = new Intent(context, NotificationActivity.class);
 
-        //you can check the log that it is fired
-        //Here we are actually not doing anything
-        //but you can do any task here that you want to be done at a specific time everyday
-        Log.d("MyAlarm", "Alarm just fired");
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(NotificationActivity.class);
+        stackBuilder.addNextIntent(notificationIntent);
 
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        Notification.Builder builder = new Notification.Builder(context);
+
+        Notification notification = builder.setContentTitle("Demo App Notification")
+                .setContentText("New Notification From Demo App..")
+                .setTicker("New Message Alert!")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(pendingIntent).build();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder.setChannelId(CHANNEL_ID);
+        }
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "NotificationDemo",
+                    IMPORTANCE_DEFAULT
+            );
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        notificationManager.notify(0, notification);
     }
-
 }

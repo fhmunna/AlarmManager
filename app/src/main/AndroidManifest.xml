@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.w3engineers.alarmmanager.alarmmanager">
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,12 +17,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".NotificationActivity" />
 
         <!-- registering the receiver -->
+        <!-- See the arrangments for using alarm manager even after boot / reboot -->
         <receiver
             android:name=".MyAlarm"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true" >
+        <intent-filter>
+            <action android:name="android.intent.action.BOOT_COMPLETED" />
+            <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
